@@ -56,7 +56,52 @@ RUN bash ./scripts/03*
 COPY ./scripts/04_horovod.sh ./scripts/
 RUN bash ./scripts/04*
 
+RUN apt-get -y install \
+    curl \
+    ghostscript \
+    libffi-dev \
+    libfreetype6-dev \
+    libfribidi-dev \
+    libharfbuzz-dev \
+    libjpeg-turbo-progs \
+    libjpeg8-dev \
+    liblcms2-dev \
+    libopenjp2-7-dev \
+    libssl-dev \
+    libsqlite3-dev \
+    libtiff5-dev \
+    libwebp-dev \
+    netpbm \
+    ninja-build \
+    tcl8.6-dev \
+    tk8.6-dev \
+    wget \
+    xvfb \
+    zlib1g-dev
 COPY ./scripts/05_benchmarker.sh ./scripts/
 RUN bash ./scripts/05*
-RUN bash ./scripts/07*
-RUN bash ./scripts/08*
+
+WORKDIR /root
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1.tar.gz
+RUN tar xf cmake*
+WORKDIR cmake-3.23.1
+RUN ./bootstrap && make && make install
+
+WORKDIR /root/MocCUDA
+
+RUN cd dep/Polygeist && git checkout 72029b6 && git submodule update --init --recursive
+COPY ./scripts/06_polygeist.sh ./scripts/
+RUN bash ./scripts/06*
+
+RUN apt-get install libunwind-dev -y
+RUN apt-get install liblapack-dev -y
+RUN apt-get install libopenblas-dev -y
+RUN apt-get install gfortran -y
+RUN apt-get install libiberty-dev -y
+RUN apt-get install libkqueue-dev -y
+COPY ./Makefile.docker ./
+#RUN sed -i '/demangle.h/d' src/utils/utils.c
+#RUN sed -i '/demangle.h/d' wrapper/wrapper.c
+RUN sed -i 's/demangle.h/libiberty\/demangle.h/' src/utils/utils.c
+RUN sed -i 's/demangle.h/libiberty\/demangle.h/' wrapper/wrapper.c
+RUN bash -e ./scripts/07*

@@ -44,7 +44,7 @@ sed -i -e 's/shape).astype(np.float32)$/shape).astype(np.float32) - 0.5/g' ./ben
 	#CC="${MocCC}" CFLAGS="${MocCFLAGS}" CXX="${MocCXX}" CXXFLAGS="${MocCXXFLAGS}" \
 	#python3 -m pip install --upgrade -r requirements_gpu.txt
 	CC="${MocCC}" CFLAGS="${MocCFLAGS}" CXX="${MocCXX}" CXXFLAGS="${MocCXXFLAGS}" \
-	python3 -m pip install --upgrade torchvision==0.5.0
+	python3 -m pip install --upgrade --no-deps torchvision==0.5.0
 	CC="${MocCC}" CFLAGS="${MocCFLAGS}" CXX="${MocCXX}" CXXFLAGS="${MocCXXFLAGS}" \
 	python3 -m pip install --upgrade transformers
 	#some bug...
