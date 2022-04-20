@@ -78,20 +78,24 @@ RUN apt-get -y install \
     wget \
     xvfb \
     zlib1g-dev
-COPY ./scripts/05_benchmarker.sh ./scripts/
-RUN bash ./scripts/05*
 
 WORKDIR /root
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.23.1/cmake-3.23.1.tar.gz
 RUN tar xf cmake*
 WORKDIR cmake-3.23.1
-RUN ./bootstrap && make && make install
+RUN ./bootstrap && make -j && make install
 
 WORKDIR /root/MocCUDA
 
 RUN cd dep/Polygeist && git checkout 72029b6 && git submodule update --init --recursive
 COPY ./scripts/06_polygeist.sh ./scripts/
 RUN bash ./scripts/06*
+
+RUN cd dep/Polygeist/mlir-brelease && ninja install
+
+# TODO we should probably specify version numbers in this script
+COPY ./scripts/05_benchmarker.sh ./scripts/
+RUN bash -xe ./scripts/05*
 
 RUN apt-get install libunwind-dev -y
 RUN apt-get install liblapack-dev -y
@@ -104,4 +108,13 @@ COPY ./Makefile.docker ./
 #RUN sed -i '/demangle.h/d' wrapper/wrapper.c
 RUN sed -i 's/demangle.h/libiberty\/demangle.h/' src/utils/utils.c
 RUN sed -i 's/demangle.h/libiberty\/demangle.h/' wrapper/wrapper.c
+RUN git fetch && git checkout 744322f
 RUN bash -e ./scripts/07*
+
+SHELL ["/bin/bash", "-c"]
+WORKDIR /root/MocCUDA/dep/benchmarker
+RUN mkdir -p /tmp/benchmarkerlogs
+RUN . ../../init.env; \
+    LD_PRELOAD=/root/MocCUDA/lib/libMocCUDA.so:/usr/local/lib/libomp.so:/usr/lib/x86_64-linux-gnu/libopenblas.so \
+    python3 -m benchmarker --framework=pytorch --problem=resnet50 --mode=training \
+    --problem_size=1 --batch_size=1 --gpu=0 --path_out=/tmp/benchmarkerlogs

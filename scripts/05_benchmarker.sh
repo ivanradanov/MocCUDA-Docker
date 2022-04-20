@@ -28,6 +28,7 @@ git checkout -- \
 	./benchmarker/util/data/synthetic/img_224_segmentation.py \
 	./benchmarker/benchmarker.py
 
+sed -i -e 's/params\["device"\] = params\["platform"\]\["gpus"\]\[0\]\["brand"\]/params["device"] = "moccuda"/' ./benchmarker/benchmarker.py
 
 #need some repeatability
 sed -i -e '/^import torch$/a\torch.manual_seed(0)' ./benchmarker/modules/do_pytorch.py
@@ -43,6 +44,10 @@ sed -i -e 's/shape).astype(np.float32)$/shape).astype(np.float32) - 0.5/g' ./ben
 	python3 -m pip install --upgrade -r requirements.txt
 	#CC="${MocCC}" CFLAGS="${MocCFLAGS}" CXX="${MocCXX}" CXXFLAGS="${MocCXXFLAGS}" \
 	#python3 -m pip install --upgrade -r requirements_gpu.txt
+	CC="${MocCC}" CFLAGS="${MocCFLAGS}" CXX="${MocCXX}" CXXFLAGS="${MocCXXFLAGS}" \
+	python3 -m pip install --upgrade pip
+	CC="${MocCC}" CFLAGS="${MocCFLAGS}" CXX="${MocCXX}" CXXFLAGS="${MocCXXFLAGS}" \
+	python3 -m pip install --upgrade pillow
 	CC="${MocCC}" CFLAGS="${MocCFLAGS}" CXX="${MocCXX}" CXXFLAGS="${MocCXXFLAGS}" \
 	python3 -m pip install --upgrade --no-deps torchvision==0.5.0
 	CC="${MocCC}" CFLAGS="${MocCFLAGS}" CXX="${MocCXX}" CXXFLAGS="${MocCXXFLAGS}" \
