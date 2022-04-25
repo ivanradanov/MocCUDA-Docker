@@ -30,9 +30,9 @@ CXXFLAGS += -DUSE_POLTERGEIST=1
 LOCALINCL = -I$(shell pwd)/src/cudart -I$(shell pwd)/src/cudnn -I$(shell pwd)/src/cublas \
 	    -I$(shell pwd)/src/utils -I$(shell pwd)/src/cudawrap
 CINCLUDES ?= $(LOCALINCL) \
-	     $(shell pkg-config --keep-system-cflags --cflags openblas) \
-	     $(shell pkg-config --keep-system-cflags --cflags libunwind) \
-	     $(shell pkg-config --keep-system-cflags --cflags hwloc) \
+	     $(shell pkg-config --cflags openblas) \
+	     $(shell pkg-config --cflags libunwind) \
+	     $(shell pkg-config --cflags hwloc) \
 	     -I$(LIBDIS_ROOT)/include
 CXXINCLUDES ?= $(LOCALINCL) \
 	       -I$(TORCH_BUILD_ROOT)/aten/src \
@@ -44,19 +44,19 @@ FINCLUDES ?= $(LOCALINCL)
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
 LFLAGS ?= -L$(VENV_SITEPACKAGES)/torch/lib -Wl,-rpath=$(VENV_SITEPACKAGES)/torch/lib \
-	  $(shell pkg-config --keep-system-libs --libs-only-L openblas) \
-	  $(shell pkg-config --keep-system-libs --libs-only-L libunwind) \
-	  $(shell pkg-config --keep-system-libs --libs-only-L hwloc) \
+	  $(shell pkg-config --libs-only-L openblas) \
+	  $(shell pkg-config --libs-only-L libunwind) \
+	  $(shell pkg-config --libs-only-L hwloc) \
 	  -L$(LIBDIS_ROOT)/lib -L$(LIBPWQ_ROOT)/lib -L$(LIBKQU_ROOT)/lib64
 
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname
 #   option, something like (this will link in libmylib.so and libm.so:
-LIBS ?= $(shell pkg-config --keep-system-libs --libs-only-l openblas) \
-	$(shell pkg-config --keep-system-libs --libs-only-l libunwind) \
-	$(shell pkg-config --keep-system-libs --libs-only-l hwloc) \
+LIBS ?= $(shell pkg-config --libs-only-l openblas) \
+	$(shell pkg-config --libs-only-l libunwind) \
+	$(shell pkg-config --libs-only-l hwloc) \
 	-liberty -lstdc++ -lc10 \
-	-l:libdispatch.a -l:libpthread_workqueue.a -lkqueue -lpthread
+	-l:libdispatch.a -l:libpthread_workqueue.a -lkqueue -lpthread -lunwind
 
 # define the C source files
 CSRCS ?= src/cudawrap/passthrough.c \
