@@ -106,7 +106,7 @@ RUN apt-get install libkqueue-dev -y
 COPY ./Makefile.docker ./
 #RUN sed -i '/demangle.h/d' src/utils/utils.c
 #RUN sed -i '/demangle.h/d' wrapper/wrapper.c
-RUN git fetch && git checkout bc757d7426b0e6594978435ead3885ccc04b23fe
+RUN git fetch && git checkout 65c3bd3ff51725aa56ebd9559ca409786c51a345
 RUN sed -i 's/demangle.h/libiberty\/demangle.h/' src/utils/utils.c
 RUN sed -i 's/demangle.h/libiberty\/demangle.h/' wrapper/wrapper.c
 RUN bash -e ./scripts/07*
