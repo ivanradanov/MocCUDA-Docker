@@ -80,7 +80,7 @@ OBJS = $(CSRCS:.c=.o)
 OBJS += $(CXXSRCS:.cpp=.o)
 OBJS += $(FSRCS:.f90=.o)
 
-OBJS += BinaryArithmeticKernel.o
+OBJS += src/torch/kernels/TorchKernels.o
 CFLAGS += -DUSE_POLTERGEIST=1
 CXXFLAGS += -DUSE_POLTERGEIST=1
 
@@ -128,8 +128,11 @@ $(CUDNN_static): ./src/cudnn/hijack_cudnn.o
 .f90.o:
 	$(FC) $(FFLAGS) $(FINCLUDES) -c $< -o $@
 
-BinaryArithmeticKernel.o:
-	make -f Makefile.BAK
+src/torch/kernels/TorchKernels.o: force
+	$(MAKE) $(MFLAGS) -C src/torch/kernels
+force:
+	true
+
 #BinaryArithmeticKernel.o:
 #	$(POLTER_CLANG) $(POLTER_CCFLAGS) \
 #		-I$(TORCH_BUILD_ROOT)/torch/include -I$(TORCH_BUILD_ROOT)/aten/src $(CINCLUDES) \
@@ -138,7 +141,7 @@ BinaryArithmeticKernel.o:
 
 clean:
 	$(RM) *.o *~ lib/*.so lib/*.a
-	make -f Makefile.BAK clean
+	$(MAKE) $(MFLAGS) -C src/torch/kernels clean
 
 depend: $(SRCS)
 	makedepend $(CINCLUDES) $(CXXINCLUDES) $^

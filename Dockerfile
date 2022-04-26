@@ -106,15 +106,18 @@ RUN apt-get install libkqueue-dev -y
 COPY ./Makefile.docker ./
 #RUN sed -i '/demangle.h/d' src/utils/utils.c
 #RUN sed -i '/demangle.h/d' wrapper/wrapper.c
-RUN git fetch && git checkout 65c3bd3ff51725aa56ebd9559ca409786c51a345
+RUN git fetch && git checkout 9b563f3
 RUN sed -i 's/demangle.h/libiberty\/demangle.h/' src/utils/utils.c
 RUN sed -i 's/demangle.h/libiberty\/demangle.h/' wrapper/wrapper.c
+COPY ./scripts/07_moccuda.sh ./scripts/
 RUN bash -e ./scripts/07*
 
 SHELL ["/bin/bash", "-c"]
 WORKDIR /root/MocCUDA/dep/benchmarker
 RUN mkdir -p /tmp/benchmarkerlogs
-RUN . ../../init.env; \
-    LD_PRELOAD=/root/MocCUDA/lib/libMocCUDA.so:/usr/local/lib/libomp.so:/usr/lib/x86_64-linux-gnu/libopenblas.so \
-    python3 -m benchmarker --framework=pytorch --problem=resnet50 --mode=training \
-    --problem_size=1 --batch_size=1 --gpu=0 --path_out=/tmp/benchmarkerlogs
+#RUN . ../../init.env; \
+#    LD_PRELOAD=/root/MocCUDA/lib/libMocCUDA.so:/usr/local/lib/libomp.so:/usr/lib/x86_64-linux-gnu/libopenblas.so \
+#    python3 -m benchmarker --framework=pytorch --problem=resnet50 --mode=training \
+#    --problem_size=1 --batch_size=1 --gpu=0 --path_out=/tmp/benchmarkerlogs
+
+#RUN cd /root/MocCUDA/dep/benchmarker; . ../../init.env; LD_PRELOAD=/root/MocCUDA/lib/libMocCUDA.so:/usr/local/lib/libomp.so:/usr/lib/x86_64-linux-gnu/libopenblas.so python3 -m benchmarker --framework=pytorch --problem=resnet50 --mode=training --problem_size=1 --batch_size=1 --gpu=0 --path_out=/tmp/benchmarkerlogs
