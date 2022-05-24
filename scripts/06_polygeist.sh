@@ -79,10 +79,12 @@ export POLTER_DB_CLANG="${POLTERDIR}/${POLDBDIR}/bin/mlir-clang"
 export POLTER_DB_COMPILE="\${POLTER_DB_CLANG} \${POLTER_DB_CCFLAGS} \${POLTER_DB_LDFLAGS}"
 export POLTER_DB_EMITLLVM="${POLTERDIR}/${MLIRDBDIR}/bin/clang -S -emit-llvm ${POLTER_DB_CCFLAGS} -I. -I${HOME}/pytorch/aten/src -I${HOME}/pytorch/torch/include "
 
-export POLTER_CCFLAGS=" \${GCC_CXX_INCL} -resource-dir=$(readlink -f ${POLTERDIR}/${MLIRDIR}/lib/clang/*) -I$(readlink -f ${POLTERDIR}/${MLIRDIR}/lib/clang/*)/include --cuda-lower --cuda-gpu-arch=sm_60 --cuda-path=\"\${CUDA_TOOLKIT_ROOT_DIR}\" -I\${CUDA_TOOLKIT_ROOT_DIR}/targets/x86_64-linux/include --function='*' "
+export POLTER_CCFLAGS=" \${GCC_CXX_INCL} -resource-dir=$(readlink -f ${POLTERDIR}/${MLIRDIR}/lib/clang/*) --cuda-lower --cuda-gpu-arch=sm_60 --cuda-path=\"\${CUDA_TOOLKIT_ROOT_DIR}\" -I\${CUDA_TOOLKIT_ROOT_DIR}/targets/x86_64-linux/include --function='*' "
 export POLTER_LDFLAGS="\${POLTER_DB_LDFLAGS}"
 export POLTER_CLANG="${POLTERDIR}/${POLDIR}/bin/mlir-clang"
 export POLTER_COMPILE="\${POLTER_CLANG} \${POLTER_CCFLAGS} \${POLTER_LDFLAGS}"
 export POLTER_EMITLLVM="${POLTERDIR}/${MLIRDIR}/bin/clang -S -emit-llvm ${POLTER_CCFLAGS} -I. -I${HOME}/pytorch/aten/src -I${HOME}/pytorch/torch/include "
 export LLVM_SYMBOLIZER_PATH="${POLTERDIR}/${MLIRDIR}/bin/llvm-symbolizer"
+export PCLANG_CC="${POLTERDIR}/${MLIRDIR}/bin/clang -resource-dir=$(readlink -f ${POLTERDIR}/${MLIRDBDIR}/lib/clang/*)"
+export PCLANG_CXX="${POLTERDIR}/${MLIRDIR}/bin/clang++ -resource-dir=$(readlink -f ${POLTERDIR}/${MLIRDBDIR}/lib/clang/*)"
 EOF
