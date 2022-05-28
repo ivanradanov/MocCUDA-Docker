@@ -86,12 +86,17 @@ WORKDIR cmake-3.23.1
 RUN ./bootstrap && make -j && make install
 
 WORKDIR /root/MocCUDA
+RUN git fetch && git checkout 983ace492fe71f449497b40f923d7886ad0c3033
 
-RUN cd dep/Polygeist && git checkout 72029b6 && git submodule update --init --recursive
+RUN cd dep/Polygeist && git fetch && git checkout 3976ff996f5d748dc857e44bc1197d442f1626e8 && git submodule update --init --recursive
 COPY ./scripts/06_polygeist.sh ./scripts/
 RUN bash ./scripts/06*
 
 RUN cd dep/Polygeist/mlir-brelease && ninja install
+
+WORKDIR /root/MocCUDA
+RUN git checkout HEAD -- scripts/06_polygeist.sh && git fetch && git checkout 0edb37fed6403e5a8561df11f111e5cecf3a6723
+COPY ./scripts/06_polygeist.sh ./scripts/
 
 # TODO we should probably specify version numbers in this script
 COPY ./scripts/05_benchmarker.sh ./scripts/
@@ -104,9 +109,9 @@ RUN apt-get install gfortran -y
 RUN apt-get install libiberty-dev -y
 RUN apt-get install libkqueue-dev -y
 COPY ./Makefile.docker ./
+RUN git checkout HEAD -- scripts/06_polygeist.sh && git fetch && git checkout 91155a465e3eaa78905289912539db55ac701fe5
 #RUN sed -i '/demangle.h/d' src/utils/utils.c
 #RUN sed -i '/demangle.h/d' wrapper/wrapper.c
-RUN git fetch && git checkout 9b563f3
 RUN sed -i 's/demangle.h/libiberty\/demangle.h/' src/utils/utils.c
 RUN sed -i 's/demangle.h/libiberty\/demangle.h/' wrapper/wrapper.c
 COPY ./scripts/07_moccuda.sh ./scripts/
@@ -115,9 +120,10 @@ RUN bash -e ./scripts/07*
 SHELL ["/bin/bash", "-c"]
 WORKDIR /root/MocCUDA/dep/benchmarker
 RUN mkdir -p /tmp/benchmarkerlogs
-#RUN . ../../init.env; \
-#    LD_PRELOAD=/root/MocCUDA/lib/libMocCUDA.so:/usr/local/lib/libomp.so:/usr/lib/x86_64-linux-gnu/libopenblas.so \
-#    python3 -m benchmarker --framework=pytorch --problem=resnet50 --mode=training \
-#    --problem_size=1 --batch_size=1 --gpu=0 --path_out=/tmp/benchmarkerlogs
+
+RUN . ../../init.env; \
+    LD_PRELOAD=/root/MocCUDA/lib/libMocCUDA.so:/usr/local/lib/libomp.so:/usr/lib/x86_64-linux-gnu/libopenblas.so \
+    python3 -m benchmarker --framework=pytorch --problem=resnet50 --mode=training \
+    --problem_size=1 --batch_size=1 --gpu=0 --path_out=/tmp/benchmarkerlogs
 
 #RUN cd /root/MocCUDA/dep/benchmarker; . ../../init.env; LD_PRELOAD=/root/MocCUDA/lib/libMocCUDA.so:/usr/local/lib/libomp.so:/usr/lib/x86_64-linux-gnu/libopenblas.so python3 -m benchmarker --framework=pytorch --problem=resnet50 --mode=training --problem_size=1 --batch_size=1 --gpu=0 --path_out=/tmp/benchmarkerlogs

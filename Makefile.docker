@@ -22,9 +22,6 @@ CFLAGS ?= $(OPTI) $(DEBUG) $(RedirectCUDA) $(RedirCUDAPaths) $(GrandCentralDispa
 	  -Wall -Wno-unused-label -fPIC -fopenmp
 CXXFLAGS ?= $(CFLAGS) -Wno-deprecated-declarations -std=c++14
 
-CFLAGS += -DUSE_POLTERGEIST=1
-CXXFLAGS += -DUSE_POLTERGEIST=1
-
 # define any directories containing header files other than /usr/include
 #
 LOCALINCL = -I$(shell pwd)/src/cudart -I$(shell pwd)/src/cudnn -I$(shell pwd)/src/cublas \
